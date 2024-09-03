@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import os
 import sys
 
@@ -10,7 +9,7 @@ from typing import List, Tuple
 from utils.load_data import load_csv
 from utils.evaultation.algo_types import AlgoType
 from utils.evaultation.dump_eval_result import dump_eval_result
-from scripts.VSMAlgo import VSM
+from algo.VSMAlgo import VSM
 
 
 class Generate_GT:

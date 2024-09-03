@@ -1,15 +1,20 @@
 import os
 import pickle
 import sys
+from typing import Union, LiteralString, Literal
+
+
 sys.path.append("..")
 import pandas as dd
 import numpy as np
+from algo.algo_interface import IAlgo
 from utils.load_data import load_parquet, load_csv, load_index
 from sklearn.metrics.pairwise import cosine_similarity
 from utils.embedder import Embedder
 
-class VSM:
-    def __init__(self, dataset, embedding):
+
+class VSM(IAlgo):
+    def __init__(self, dataset, embedding, mode:Literal["cosine_similarity", "lsh_similarity"]="cosine_similarity"):
         self.embedding_type = embedding
         try:
             if self.embedding_type == "bge":
@@ -23,6 +28,11 @@ class VSM:
         self.data = load_csv(raw_file_path)
         self.embeddings = np.vstack(load_parquet(embedding_file_path)["embedding"].values)
         self.lsh_index = load_index(lsh_indexing_file_path)
+
+        if mode=="cosine_similarity":
+            self.method = self.top_k_cosine_similarity
+        if mode=="lsh_similarity":
+            self.method = self.top_k_lsh_similarity
 
         
     def top_k_cosine_similarity(self, query, k):
@@ -54,7 +64,10 @@ class VSM:
         distances, indices = self.lsh_index.search(query_embedded, k)
         top_k_documents = self.data.iloc[indices.flatten()]
         return top_k_documents
-        
+
+
+    def run(self, query, k):
+        return self.method(query, k)
 
     
 
