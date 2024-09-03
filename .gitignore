@@ -10,6 +10,7 @@ venv/
 ### Ignore PyCache
 __pycache__/
 *.pyc.*
+*.pyc
 
 ### Ignore IDE Files
 .idea/
