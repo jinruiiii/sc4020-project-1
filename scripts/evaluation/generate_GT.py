@@ -12,6 +12,7 @@ from utils.evaultation.dump_eval_result import dump_eval_result
 from algo.VSMAlgo import VSM
 
 
+
 class Generate_GT:
     def __init__(self, dataset:str, embedding:str):
         self.VSM = VSM(dataset, embedding)
