@@ -1,7 +1,7 @@
 import os
 import pickle
 import sys
-sys.path.append("..")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pandas as dd
 import numpy as np
 from utils.load_data import load_parquet, load_csv, load_index

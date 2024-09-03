@@ -1,7 +1,7 @@
 import faiss
 import numpy as np
 import sys
-sys.path.append("..")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import os
 from utils.load_data import load_parquet
 

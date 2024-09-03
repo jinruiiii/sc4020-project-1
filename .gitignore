@@ -4,6 +4,9 @@
 venv/
 .venv/
 
+### Ignore items inside experiment file
+experiments/
+
 ### Ignore MacOS Files
 .DS_Store/
 
