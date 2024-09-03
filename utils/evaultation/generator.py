@@ -6,6 +6,7 @@ sys.path.append("../..")
 import alive_progress
 from typing import List, Callable
 import time
+import pandas as pd
 
 from algo.algo_interface import IAlgo
 
@@ -51,5 +52,6 @@ class Generator:
 
                     bar()
 
-                dump_eval_result(self.folder_time, algo.name(), algo.data_source(), **algo.details())
+                res_df = pd.DataFrame.from_dict(res)
+                dump_eval_result(self.folder_time, algo.name(), algo.data_source(), res_df, **algo.details())
 
