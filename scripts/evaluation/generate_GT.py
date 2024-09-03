@@ -20,7 +20,7 @@ class Generate_GT:
         self.dataset = load_csv(os.path.join(base_dir, f"../../data/{dataset}/raw_data/{dataset}.csv"))
         self.questions, self.index_rows = self.generate_qns(32)
         self.answers, self.time_taken = self.generate_top_k(10)
-        self.results_df = self.generate_df(self.index_rows, self.answers, self.time_taken)
+        self.results_df = self.generate_df(self.questions, self.answers, self.time_taken)
 
     def generate_qns(self, sample_size:int) -> Tuple[List[str], List[int]]:
         rows = self.dataset.sample(n=sample_size)
@@ -39,9 +39,9 @@ class Generate_GT:
         return answers, time_taken
 
     @staticmethod
-    def generate_df(index_rows, answers, time_taken) -> pd.DataFrame:
+    def generate_df(questions, answers, time_taken) -> pd.DataFrame:
         df_dict = {
-            'q_id': index_rows,
+            'question': questions,
             'top_k': answers,
             'time_taken': time_taken
         }
@@ -53,4 +53,4 @@ class Generate_GT:
 
 if __name__ == "__main__":
     generate = Generate_GT("starbucks","bge")
-    dump_eval_result(AlgoType.VSM, generate.results_df, type="gt")
+    dump_eval_result("gt", AlgoType.VSM, "starbucks", generate.results_df, type="gt")
