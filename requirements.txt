@@ -18,7 +18,7 @@ locket==1.0.0
 MarkupSafe==2.1.5
 mpmath==1.3.0
 networkx==3.3
-numpy==2.1.0
+numpy~=1.26.4
 packaging==24.1
 pandas==2.2.2
 partd==1.4.2
@@ -45,3 +45,4 @@ urllib3==2.2.2
 zipp==3.20.1
 # numpy > 2 not compatible with torch
 # torch==1.11.0
+faiss-cpu~=1.8.0.post1
