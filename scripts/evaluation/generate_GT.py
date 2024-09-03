@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import sys
-
+import time
 
 sys.path.append("../..")
 
@@ -33,7 +33,10 @@ class Generate_GT:
         answers = []
         time_taken = []
         for qn in self.questions:
+            start_time = time.time_ns()
             answer = self.VSM.top_k_cosine_similarity(qn,k)
+            end_time = time.time_ns()
+            time_taken.append((end_time-start_time)//1_000_000)  # convert ns to ms
             answers.append(answer["Review"].values)
 
         return answers, time_taken
