@@ -1,8 +1,8 @@
 import faiss
 import numpy as np
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.load_data import load_parquet
 
 def get_file_paths():
