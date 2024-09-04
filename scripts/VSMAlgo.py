@@ -21,7 +21,7 @@ class VSM:
         embedding_file_path = os.path.join(base_dir, f"../data/{dataset}/embeddings/{embedding}.parquet")
         lsh_indexing_file_path = os.path.join(base_dir, f"../data/{dataset}/indexing/lsh.index")
         self.data = load_csv(raw_file_path)
-        self.embeddings = np.vstack(load_parquet(embedding_file_path)["embedding"].values)
+        self.embeddings = np.vstack(load_parquet(embedding_file_path).values)
         self.lsh_index = load_index(lsh_indexing_file_path)
 
         

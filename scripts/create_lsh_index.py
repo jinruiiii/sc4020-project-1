@@ -24,7 +24,7 @@ def main():
     # Get file paths
     input_embedding_file, output_indexing_file = get_file_paths()
 
-    embeddings = np.vstack(load_parquet(input_embedding_file)["embedding"].values)
+    embeddings = np.vstack(load_parquet(input_embedding_file).values)
     dims = embeddings.shape[1]
     nbits=64
 

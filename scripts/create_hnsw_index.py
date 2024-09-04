@@ -33,7 +33,7 @@ class HNSW:
         self.data = load_csv(raw_file_path)
 
         # load embeddings
-        self.data_store_embeddings = np.vstack(load_parquet(embedding_file_path)["embedding"].values).astype('float32')
+        self.data_store_embeddings = np.vstack(load_parquet(embedding_file_path).values).astype('float32')
         
         self.M = M
 
