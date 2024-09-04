@@ -10,8 +10,8 @@ from alive_progress import alive_bar
 
 def get_file_paths():
     base_dir = os.path.dirname(__file__)
-    input_csv_file = os.path.join(base_dir, "../data/starbucks/raw_data/starbucks.csv")
-    output_embedding_file = os.path.join(base_dir, "../data/starbucks/embeddings/bge.parquet")
+    input_csv_file = os.path.join(base_dir, "../data/airline_reviews/raw_data/BA_AirlineReviews.csv")
+    output_embedding_file = os.path.join(base_dir, "../data/airline_reviews/embeddings/bge.parquet")
     return input_csv_file, output_embedding_file
 
 
@@ -40,11 +40,12 @@ def main():
     embedder = Embedder()
 
     # Process embeddings
-    column_name = "Review"
+    column_name = "ReviewBody"
     data = process_embeddings(data, column_name, embedder)
-    return
+    
     # Save the embeddings to a file
     save_embeddings(data, output_embedding_file)
+    return
 
 if __name__ == "__main__":
     main()

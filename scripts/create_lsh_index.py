@@ -7,8 +7,8 @@ from utils.load_data import load_parquet
 
 def get_file_paths():
     base_dir = os.path.dirname(__file__)
-    input_embedding_file = os.path.join(base_dir, "../data/starbucks/embeddings/bge.parquet")
-    output_indexing_file = os.path.join(base_dir, "../data/starbucks/indexing/lsh.index")
+    input_embedding_file = os.path.join(base_dir, "../data/airline_reviews/embeddings/bge.parquet")
+    output_indexing_file = os.path.join(base_dir, "../data/airline_reviews/indexing/lsh.index")
     return input_embedding_file, output_indexing_file
 
 def build_index(embeddings, dims, nbits):
