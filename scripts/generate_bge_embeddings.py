@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import sys
-sys.path.append("..")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.embedder import Embedder
 from utils.load_data import load_csv
 from alive_progress import alive_bar
@@ -42,9 +42,10 @@ def main():
     # Process embeddings
     column_name = "Review"
     data = process_embeddings(data, column_name, embedder)
-    return
+    
     # Save the embeddings to a file
     save_embeddings(data, output_embedding_file)
+    return
 
 if __name__ == "__main__":
     main()

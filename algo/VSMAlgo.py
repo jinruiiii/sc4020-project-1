@@ -1,9 +1,8 @@
 import os
 import pickle
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Union, Literal, Dict
-
-
 sys.path.append("..")
 import pandas as dd
 import numpy as np
@@ -29,7 +28,7 @@ class VSM(IAlgo):
         embedding_file_path = os.path.join(base_dir, f"../data/{dataset}/embeddings/{embedding}.parquet")
         lsh_indexing_file_path = os.path.join(base_dir, f"../data/{dataset}/indexing/lsh.index")
         self.data = load_csv(raw_file_path)
-        self.embeddings = np.vstack(load_parquet(embedding_file_path)["embedding"].values)
+        self.embeddings = np.vstack(load_parquet(embedding_file_path).values)
         self.lsh_index = load_index(lsh_indexing_file_path)
 
         self.mode = mode
@@ -38,7 +37,7 @@ class VSM(IAlgo):
         if mode=="lsh_similarity":
             self.method = self.top_k_lsh_similarity
 
-        
+
     def top_k_cosine_similarity(self, query, k):
         try:
             if self.embedding_type == "bge":
@@ -68,7 +67,7 @@ class VSM(IAlgo):
         distances, indices = self.lsh_index.search(query_embedded, k)
         top_k_documents = self.data.iloc[indices.flatten()]
         return top_k_documents
-
+        
 
     def run(self, query, k):
         return self.method(query, k)
@@ -85,7 +84,7 @@ class VSM(IAlgo):
     def data_source(self) -> str:
         return self.data_set_name
 
-    
+
 
 if __name__ == "__main__":
     vsm = VSM("starbucks", "bge")
