@@ -101,3 +101,12 @@ class HNSW:
         index_file_path = os.path.join(base_dir, f"../data/{self.dataset}/indexing/hnsw.index")
         self.index = faiss.read_index(index_file_path)
         return
+    
+
+if __name__ == "__main__":
+    hnsw = HNSW("starbucks", "bge", 16)
+    hnsw.load_index()
+    queries = ["latte"]
+    I, results = hnsw.search(queries, 5)
+    for i in results[0]:
+        print(i['Review'])
