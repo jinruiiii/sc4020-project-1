@@ -2,20 +2,27 @@ import os
 import pickle
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from typing import Union, Literal, Dict
+sys.path.append("..")
 import pandas as dd
 import numpy as np
+from algo.algo_interface import IAlgo
+from utils.evaultation.algo_types import AlgoType
 from utils.load_data import load_parquet, load_csv, load_index
 from sklearn.metrics.pairwise import cosine_similarity
 from utils.embedder import Embedder
 
-class VSM:
-    def __init__(self, dataset, embedding):
+
+class VSM(IAlgo):
+    def __init__(self, dataset:Literal["starbucks"], embedding, mode:Literal["cosine_similarity", "lsh_similarity"]="cosine_similarity"):
         self.embedding_type = embedding
         try:
             if self.embedding_type == "bge":
                 self.vectorizer = Embedder()
         except:
             raise ValueError("Currently only accept BGE embedding")
+
+        self.data_set_name = dataset
         base_dir = os.path.dirname(__file__)
         raw_file_path = os.path.join(base_dir, f"../data/{dataset}/raw_data/{dataset}.csv")
         embedding_file_path = os.path.join(base_dir, f"../data/{dataset}/embeddings/{embedding}.parquet")
@@ -24,7 +31,13 @@ class VSM:
         self.embeddings = np.vstack(load_parquet(embedding_file_path).values)
         self.lsh_index = load_index(lsh_indexing_file_path)
 
-        
+        self.mode = mode
+        if mode=="cosine_similarity":
+            self.method = self.top_k_cosine_similarity
+        if mode=="lsh_similarity":
+            self.method = self.top_k_lsh_similarity
+
+
     def top_k_cosine_similarity(self, query, k):
         try:
             if self.embedding_type == "bge":
@@ -56,7 +69,22 @@ class VSM:
         return top_k_documents
         
 
-    
+    def run(self, query, k):
+        return self.method(query, k)
+
+    def details(self) -> Dict[str, Union[str, int]]:
+        return {
+            "embedding": self.embedding_type,
+            "mode": self.mode,
+        }
+
+    def name(self) -> AlgoType:
+        return AlgoType.VSM
+
+    def data_source(self) -> str:
+        return self.data_set_name
+
+
 
 if __name__ == "__main__":
     vsm = VSM("starbucks", "bge")
