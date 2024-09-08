@@ -63,25 +63,6 @@ class HNSW:
             self.index.hnsw.efSearch = efSearch
         
         return self.index
-
-    def search(self, queries, k: int):
-        """
-        queries: list of strings of natural language queries
-        k: no. of nearest neighbours to search 
-
-        Returns (list of indices corresponding to nearest neighbours of query, list of data rows corresponding to nearest neighbours of query)
-        """
-        embedded_queries = []
-        try:
-            if self.embedding_type == "bge":
-                embedded_queries = np.array([self.vectorizer.embed(query).squeeze(0).numpy() for query in queries])
-        except:
-            raise ValueError("Currently only accept BGE embedding")
-        
-        D, I = self.index.search(embedded_queries, k)
-
-        results = [[self.data.iloc[row] for row in result] for result in I]
-        return I, results
     
     def save_index(self):
         """
@@ -91,22 +72,8 @@ class HNSW:
         index_file_path = os.path.join(base_dir, f"../data/{self.dataset}/indexing/hnsw.index")
         faiss.write_index(self.index, index_file_path)
         return
-
-    def load_index(self):
-        """
-        Load index from index file
-        Returns HNSW index
-        """
-        base_dir = os.path.dirname(__file__)
-        index_file_path = os.path.join(base_dir, f"../data/{self.dataset}/indexing/hnsw.index")
-        self.index = faiss.read_index(index_file_path)
-        return
     
-
 if __name__ == "__main__":
-    hnsw = HNSW("starbucks", "bge", 16)
-    hnsw.load_index()
-    queries = ["latte"]
-    I, results = hnsw.search(queries, 5)
-    for i in results[0]:
-        print(i['Review'])
+    hnsw = HNSW("starbucks", "bge", 10)
+    hnsw.index = hnsw.construct_graph()
+    hnsw.save_index()
