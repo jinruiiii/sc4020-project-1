@@ -50,9 +50,9 @@ class HNSW(IAlgo):
         self.mode = "hnsw"
         self.method = self.search
 
-    def search(self, queries, k: int):
+    def search(self, query: str, k: int):
         """
-        queries: list of strings of natural language queries
+        query: single query to search for
         k: no. of nearest neighbours to search 
 
         Returns (list of indices corresponding to nearest neighbours of query, list of data rows corresponding to nearest neighbours of query)
@@ -60,14 +60,15 @@ class HNSW(IAlgo):
         embedded_queries = []
         try:
             if self.embedding_type == "bge":
-                embedded_queries = np.array([self.vectorizer.embed(query).squeeze(0).numpy() for query in queries])
+                embedded_queries = self.vectorizer.embed(query)
         except:
             raise ValueError("Currently only accept BGE embedding")
         
         D, I = self.index.search(embedded_queries, k)
 
-        results = [[self.data.iloc[row] for row in result] for result in I]
-        return I, results
+        # results = [[self.data.iloc[row] for row in result] for result in I]
+        results = self.data.iloc[I.flatten()]
+        return results
 
     def load_index(self):
         """
@@ -79,13 +80,14 @@ class HNSW(IAlgo):
         self.index = faiss.read_index(index_file_path)
         return
     
-    def run(self,query, k):
+    def run(self, query, k):
         return self.method(query, k)
     
     def details(self) -> Dict[str, Union[str, int]]:
         return {
             "embedding": self.embedding_type,
             "mode": self.mode,
+            "neighbors": self.M
         }
     
     def name(self) -> AlgoType:
@@ -96,5 +98,5 @@ class HNSW(IAlgo):
     
 if __name__ == "__main__":
     algo = HNSW("starbucks", "bge", 5)
-    I, results = algo.run("Latte", 5)
+    results = algo.run("Latte", 5)
     print(results)
