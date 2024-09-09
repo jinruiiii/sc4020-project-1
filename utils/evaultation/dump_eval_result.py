@@ -27,4 +27,6 @@ def dump_eval_result(
     """
 
     attr_names = "_".join([f"{k}={v}" for k, v in kwargs.items()])
-    data.to_parquet(get_data_path(f"eval/{folder_name}/{dataset_name}_{algo_name}__{attr_names}.parquet"))
+    save_path = f"eval/{folder_name}/{dataset_name}_{algo_name}__{attr_names}.parquet"
+    
+    data.to_parquet(get_data_path(save_path))

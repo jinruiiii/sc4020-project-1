@@ -1,4 +1,5 @@
 import sys
+import json
 
 from utils.evaultation.dump_eval_result import dump_eval_result
 
@@ -24,7 +25,7 @@ class Generator:
         """
         self.questions = questions
         self.k = top_k
-        self.folder_time = time.strftime("%Y-%M-%D_%H-%M-%S", time.localtime())
+        self.folder_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
 
 
     def run(self, runners:List[Callable[[], IAlgo]]) -> None:
@@ -53,5 +54,7 @@ class Generator:
                     bar()
 
                 res_df = pd.DataFrame.from_dict(res)
+                res_df['top_k'] = res_df["top_k"].apply(lambda x: json.dumps(x.to_dict()))
+                
                 dump_eval_result(self.folder_time, algo.name(), algo.data_source(), res_df, **algo.details())
 
