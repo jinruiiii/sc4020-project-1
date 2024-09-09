@@ -20,7 +20,9 @@ def main():
 
     for i in range(10):
         # Covers 2^[0, 9] => 1, 2, 4, 8, ..., 512 neighbours
-        runners.append(lambda: HNSW("starbucks", "bge", 2**i))
+        runners.append(lambda pwr=i: HNSW("starbucks", "bge", 2**pwr))
+
+    print(len(runners))
 
     # Execute each runner
     Generator(["latte"]).run(runners)
