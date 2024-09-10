@@ -44,12 +44,35 @@ class HNSW(IAlgo):
         self.M = M
 
         # fetch index
-        self.index = None
-        self.load_index()
+        self.index = faiss.IndexHNSWFlat(self.d, self.M)
 
         self.mode = "hnsw"
         self.method = self.search
 
+    def construct_graph(self, efConstruction=None, efSearch=None, M = None, mL = None):
+        """
+        efConstruction: no. of nearest neighbours to explore during construction (optional)
+        efSearch: no. of nearest neighbours to explore during search (optional)
+        M: no. of neighbours during insertion (optional)
+        mL: normalization factor (optional)
+
+        Returns the created HNSW Index
+        """
+
+        if efConstruction is not None:
+            self.index.hnsw.efConstruction = efConstruction
+
+        if M is not None and mL is not None:
+            self.index.set_default_probas(M, mL)
+
+        self.index.add(self.data_store_embeddings) #build the index
+
+        #change efSearch after adding the data
+        if efSearch is not None:
+            self.index.hnsw.efSearch = efSearch
+
+        return self.index
+    
     def search(self, query: str, k: int):
         """
         query: single query to search for
@@ -69,16 +92,6 @@ class HNSW(IAlgo):
         # results = [[self.data.iloc[row] for row in result] for result in I]
         results = self.data.iloc[I.flatten()]
         return results
-
-    def load_index(self):
-        """
-        Load index from index file
-        Returns HNSW index
-        """
-        base_dir = os.path.dirname(__file__)
-        index_file_path = os.path.join(base_dir, f"../data/{self.data_set_name}/indexing/hnsw.index")
-        self.index = faiss.read_index(index_file_path)
-        return
     
     def run(self, query, k):
         return self.method(query, k)
