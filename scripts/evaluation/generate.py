@@ -3,6 +3,7 @@ File to be run to generate the search results, and time taken for each query.
 """
 import sys
 from typing import List, Callable
+import numpy as np
 
 
 sys.path.append("../..")
@@ -20,12 +21,15 @@ def main():
 
     for i in range(10):
         # Covers 2^[0, 9] => 1, 2, 4, 8, ..., 512 neighbours
-        runners.append(lambda pwr=i: HNSW("starbucks", "bge", 2**pwr))
+        M = 2**i
+        hnsw = HNSW("starbucks", "bge", M)
+        hnsw.construct_graph(efConstruction=M,efSearch=M,M=M)
+        runners.append(lambda : hnsw)
 
     print(len(runners))
 
-    # Execute each runner
-    Generator(["latte"]).run(runners)
+    # # Execute each runner
+    # Generator(["latte"]).run(runners)
 
 
 if __name__ == "__main__":

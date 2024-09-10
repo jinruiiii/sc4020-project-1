@@ -62,9 +62,6 @@ class HNSW(IAlgo):
         if efConstruction is not None:
             self.index.hnsw.efConstruction = efConstruction
 
-        if M is not None and mL is not None:
-            self.index.set_default_probas(M, mL)
-
         self.index.add(self.data_store_embeddings) #build the index
 
         #change efSearch after adding the data
