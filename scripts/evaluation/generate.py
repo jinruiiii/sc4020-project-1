@@ -19,17 +19,17 @@ def main():
         lambda: VSM("starbucks", "bge", mode="cosine_similarity"),
     ]
 
-    for i in range(10):
+    for i in range(3):
         # Covers 2^[0, 9] => 1, 2, 4, 8, ..., 512 neighbours
-        M = 2**i
-        hnsw = HNSW("starbucks", "bge", M)
-        hnsw.construct_graph(efConstruction=M,efSearch=M,M=M)
-        runners.append(lambda : hnsw)
+        hnsw = HNSW("starbucks", "bge", 2**i)
+        hnsw.construct_graph(efConstruction=i, efSearch=i)
+        runners.append(lambda: hnsw)
+        print("HNSW with M = ", 2**i)
 
     print(len(runners))
 
-    # # Execute each runner
-    # Generator(["latte"]).run(runners)
+    # Execute each runner
+    Generator(["latte"]).run(runners)
 
 
 if __name__ == "__main__":
