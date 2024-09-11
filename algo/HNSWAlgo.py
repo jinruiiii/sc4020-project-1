@@ -4,7 +4,8 @@ import sys
 import faiss
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from typing import Union, Literal, Dict
+from typing import Union, Literal, Dict, Optional
+
 sys.path.append("..")
 import pandas as pd
 import numpy as np
@@ -13,12 +14,22 @@ from utils.evaultation.algo_types import AlgoType
 from utils.load_data import load_csv, load_parquet
 from utils.embedder import Embedder
 
+
 class HNSW(IAlgo):
-    def __init__(self, dataset: Literal["starbucks"], embedding_type: str, M: int):
+    def __init__(
+            self,
+            dataset: Literal["starbucks"],
+            embedding_type: str,
+            M: int,
+            efConstruction: Optional[int] = None,
+            efSearch: Optional[int] = None
+    ):
         """
         dataset: name of dataset folder
         embedding_type: name of embeddings to use
         M: no. of neighbours during insertion
+        efConstruction: optional, number of nearest neighbours to explore during construction, default: 40
+        efSearch: optional, nuber of nearest neighbours to explore during search, default: 16
         """
         self.embedding_type = embedding_type
         try:
@@ -28,13 +39,15 @@ class HNSW(IAlgo):
                 self.d = 1024
         except:
             raise ValueError("Currently only accept BGE embedding")
-        
+
         self.data_set_name = dataset
+        self.efConstruction = efConstruction
+        self.efSearch = efSearch
 
         base_dir = os.path.dirname(__file__)
         raw_file_path = os.path.join(base_dir, f"../data/{dataset}/raw_data/{dataset}.csv")
         embedding_file_path = os.path.join(base_dir, f"../data/{dataset}/embeddings/{embedding_type}.parquet")
-        
+
         # load raw data
         self.data = load_csv(raw_file_path)
 
@@ -44,32 +57,33 @@ class HNSW(IAlgo):
         self.M = M
 
         # fetch index
-        self.index = faiss.IndexHNSWFlat(self.d, self.M)
+        self.index = self._construct_graph(self.efConstruction, self.efSearch)
 
         self.mode = "hnsw"
         self.method = self.search
 
-    def construct_graph(self, efConstruction=None, efSearch=None, M = None, mL = None):
+    def _construct_graph(self, efConstruction=None, efSearch=None, mL=None):
         """
         efConstruction: no. of nearest neighbours to explore during construction (optional)
         efSearch: no. of nearest neighbours to explore during search (optional)
-        M: no. of neighbours during insertion (optional)
         mL: normalization factor (optional)
 
         Returns the created HNSW Index
         """
 
+        index = faiss.IndexHNSWFlat(self.d, self.M)
+
         if efConstruction is not None:
-            self.index.hnsw.efConstruction = efConstruction
+            index.hnsw.efConstruction = efConstruction
 
-        self.index.add(self.data_store_embeddings) #build the index
+        index.add(self.data_store_embeddings)  # build the index
 
-        #change efSearch after adding the data
+        # change efSearch after adding the data
         if efSearch is not None:
-            self.index.hnsw.efSearch = efSearch
+            index.hnsw.efSearch = efSearch
 
-        return self.index
-    
+        return index
+
     def search(self, query: str, k: int):
         """
         query: single query to search for
@@ -83,29 +97,32 @@ class HNSW(IAlgo):
                 embedded_queries = self.vectorizer.embed(query)
         except:
             raise ValueError("Currently only accept BGE embedding")
-        
+
         D, I = self.index.search(embedded_queries, k)
 
         # results = [[self.data.iloc[row] for row in result] for result in I]
         results = self.data.iloc[I.flatten()]
         return results
-    
+
     def run(self, query, k):
         return self.method(query, k)
-    
+
     def details(self) -> Dict[str, Union[str, int]]:
         return {
             "embedding": self.embedding_type,
             "mode": self.mode,
-            "neighbors": self.M
+            "neighbors": self.M,
+            "efConstruction": self.efConstruction,
+            "efSearch": self.efSearch
         }
-    
+
     def name(self) -> AlgoType:
         return AlgoType.HNSW
-    
+
     def data_source(self) -> str:
         return self.data_set_name
-    
+
+
 if __name__ == "__main__":
     algo = HNSW("starbucks", "bge", 5)
     results = algo.run("Latte", 5)
