@@ -21,9 +21,10 @@ def main():
 
     for i in range(3):
         # Covers 2^[0, 9] => 1, 2, 4, 8, ..., 512 neighbours
+        print(f"Constructing graph for i={i}")
         hnsw = HNSW("starbucks", "bge", 2**i)
         hnsw.construct_graph(efConstruction=i, efSearch=i)
-        runners.append(lambda: hnsw)
+        runners.append(lambda pwr=i: HNSW("starbucks", "bge", 2**pwr))
         print("HNSW with M = ", 2**i)
 
     print(len(runners))
