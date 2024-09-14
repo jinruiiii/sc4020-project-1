@@ -8,25 +8,25 @@ from typing import List, Callable
 sys.path.append("../..")
 from utils.evaultation.generator import Generator
 from algo.algo_interface import IAlgo
+from algo.HNSWAlgo import HNSW
 from algo.VSMAlgo import VSM
 
 
 def main():
-
-    ### EXAMPLE
-
     # Lazily instantiated list of runners
-    runners:List[Callable[[], IAlgo]] = [
-        lambda: VSM("starbucks", "bge", mode="cosine_similarity")
+    runners: List[Callable[[], IAlgo]] = [
+        lambda: VSM("starbucks", "bge", mode="cosine_similarity"),
     ]
+
+    for i in range(10):
+        # Covers 2^[0, 9] => 1, 2, 4, 8, ..., 512 neighbours
+        runners.append(lambda pwr=i: HNSW("starbucks", "bge", 2**pwr))
+
+    print(len(runners))
 
     # Execute each runner
     Generator(["latte"]).run(runners)
 
 
-
-
-
 if __name__ == "__main__":
     main()
-
