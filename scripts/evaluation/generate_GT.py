@@ -19,7 +19,8 @@ class Generate_GT:
         base_dir = os.path.dirname(__file__)
         self.dataset = load_csv(os.path.join(base_dir, f"../../data/{dataset}/raw_data/{dataset}.csv"))
         self.questions, self.index_rows = self.generate_qns(32)
-        self.answers, self.time_taken = self.generate_top_k(10)
+        # 30 + 1 because dont want the query itself to count as the relevant documents
+        self.answers, self.time_taken = self.generate_top_k(30+1)
         self.results_df = self.generate_df(self.questions, self.answers, self.time_taken)
 
     def generate_qns(self, sample_size:int) -> Tuple[List[str], List[int]]:
