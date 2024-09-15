@@ -1,8 +1,10 @@
 import os
 import pickle
 import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Union, Literal, Dict
+
 sys.path.append("..")
 import pandas as dd
 import numpy as np
@@ -14,7 +16,7 @@ from utils.embedder import Embedder
 
 
 class LSH(IAlgo):
-    def __init__(self, dataset:Literal["starbucks"], embedding, nbits):
+    def __init__(self, dataset: Literal["starbucks"], embedding, nbits):
         self.embedding_type = embedding
         self.nbits = nbits
         try:
@@ -33,10 +35,9 @@ class LSH(IAlgo):
         self.lsh_index = load_index(lsh_indexing_file_path)
 
         self.mode = "lsh_similarity"
-        if self.mode=="lsh_similarity":
+        if self.mode == "lsh_similarity":
             self.method = self.top_k_lsh_similarity
 
-    
     def top_k_lsh_similarity(self, query, k):
         try:
             if self.embedding_type == "bge":
@@ -46,7 +47,6 @@ class LSH(IAlgo):
         distances, indices = self.lsh_index.search(query_embedded, k)
         top_k_documents = self.data.iloc[indices.flatten()]
         return top_k_documents
-        
 
     def run(self, query, k):
         return self.method(query, k)
@@ -55,7 +55,7 @@ class LSH(IAlgo):
         return {
             "embedding": self.embedding_type,
             "mode": self.mode,
-            "nbits":self.nbits
+            "nbits": self.nbits
         }
 
     def name(self) -> AlgoType:
@@ -63,7 +63,6 @@ class LSH(IAlgo):
 
     def data_source(self) -> str:
         return self.data_set_name
-
 
 
 if __name__ == "__main__":
