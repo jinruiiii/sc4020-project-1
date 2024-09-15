@@ -35,7 +35,7 @@ def main():
                     lambda m_=m, c_=c, s_=s: HNSW("starbucks", "bge", m_, c_, s_)
                 )
 
-    for n_pwr in range(3, 12):
+    for n_pwr in range(3, 10):
         runners.append(lambda pwr=n_pwr: LSH("starbucks", "bge", 2**pwr))
 
     print(f"Starting generator with {len(runners)} runners!")
