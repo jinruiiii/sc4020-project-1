@@ -16,15 +16,24 @@ from algo.VSMAlgo import VSM
 
 def main():
     # Lazily instantiated list of runners
-    runners: List[Callable[[], IAlgo]] = [
-        lambda: VSM("starbucks", "bge"),
-    ]
+    runners: List[Callable[[], IAlgo]] = []
 
-    for m_pwr in range(10):
-        for construct_pwr in range(3, 8):
-            for search_pwr in range(3, 8):
+    print("Adding runners to list")
+
+    runners.append(
+        lambda: VSM("starbucks", "bge")
+    )
+
+    m_vals = [2**i for i in range(4, 10)]
+    con_vals = [2**i for i in range(10)]
+    search_vals = [2**i for i in range(10)]
+
+    for m in m_vals:
+        for c in con_vals:
+            for s in search_vals:
                 runners.append(
-                    lambda m=2 ** m_pwr, c=2 ** construct_pwr, s=2 ** search_pwr: HNSW("starbucks", "bge", m, c, s))
+                    lambda m_=m, c_=c, s_=s: HNSW("starbucks", "bge", m_, c_, s_)
+                )
 
     for n_pwr in range(3, 10):
         runners.append(lambda pwr=n_pwr: LSH("starbucks", "bge", 2**pwr))

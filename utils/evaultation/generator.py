@@ -32,7 +32,9 @@ class Generator:
 
         with alive_progress.alive_bar(total_queries) as bar:
             for r in runners:
+                print("Creating next runner!")
                 algo = r()
+                print(f"Starting runner for {algo.name()}, {algo.details()}")
 
                 res = {
                     "question": [],
@@ -41,6 +43,7 @@ class Generator:
                 }
 
                 for q in self.questions:
+                    print(f"Query: {q}")
                     start_time = time.time_ns()
                     result = algo.run(q, self.k)
                     end_time = time.time_ns()
