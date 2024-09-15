@@ -49,5 +49,6 @@ typing_extensions==4.12.2
 tzdata==2024.1
 urllib3==2.2.2
 zipp==3.20.1
+matplotlib==3.7.1
 # numpy > 2 not compatible with torch
 # torch==1.11.0
