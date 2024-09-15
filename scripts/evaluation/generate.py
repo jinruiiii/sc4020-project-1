@@ -9,6 +9,7 @@ import numpy as np
 sys.path.append("../..")
 from utils.evaultation.generator import Generator
 from algo.algo_interface import IAlgo
+from algo.LSHAlgo import LSH
 from algo.HNSWAlgo import HNSW
 from algo.VSMAlgo import VSM
 
@@ -16,21 +17,19 @@ from algo.VSMAlgo import VSM
 def main():
     # Lazily instantiated list of runners
     runners: List[Callable[[], IAlgo]] = [
-        lambda: VSM("starbucks", "bge", mode="cosine_similarity"),
+        lambda: VSM("starbucks", "bge"),
     ]
 
-    for i in range(1, 10):
-        # Covers 2^[0, 9] => 1, 2, 4, 8, ..., 512 neighbours
-        runners.append(lambda pwr=i: HNSW("starbucks", "bge", 2**pwr))
-        print("HNSW with M = ", 2**i)
-
     for m_pwr in range(10):
-        for construct_pwr in range(10):
-            for search_pwr in range(10):
-                runners.append(lambda m=2**m_pwr, c=2**construct_pwr, s=2**search_pwr: HNSW("starbucks", "bge", m, c, s))
+        for construct_pwr in range(3, 8):
+            for search_pwr in range(3, 8):
+                runners.append(
+                    lambda m=2 ** m_pwr, c=2 ** construct_pwr, s=2 ** search_pwr: HNSW("starbucks", "bge", m, c, s))
 
-    print(runners)
+    for n_pwr in range(3, 10):
+        runners.append(lambda pwr=n_pwr: LSH("starbucks", "bge", 2**pwr))
 
+    print(f"Starting generator with {len(runners)} runners!")
 
     # Execute each runner
     Generator([

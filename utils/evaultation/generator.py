@@ -27,8 +27,7 @@ class Generator:
         self.k = top_k
         self.folder_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
 
-
-    def run(self, runners:List[Callable[[], IAlgo]]) -> None:
+    def run(self, runners: List[Callable[[], IAlgo]]) -> None:
         total_queries = len(self.questions) * len(runners)
 
         with alive_progress.alive_bar(total_queries) as bar:
@@ -42,19 +41,17 @@ class Generator:
                 }
 
                 for q in self.questions:
-
                     start_time = time.time_ns()
                     result = algo.run(q, self.k)
                     end_time = time.time_ns()
 
                     res["question"].append(q)
                     res["top_k"].append(result)
-                    res["time_taken"].append((end_time-start_time)//1_000_000)  # convert ns to ms
+                    res["time_taken"].append((end_time - start_time) // 1_000_000)  # convert ns to ms
 
                     bar()
 
                 res_df = pd.DataFrame.from_dict(res)
                 res_df['top_k'] = res_df["top_k"].apply(lambda x: json.dumps(x.to_dict()))
-                
-                dump_eval_result(self.folder_time, algo.name(), algo.data_source(), res_df, **algo.details())
 
+                dump_eval_result(self.folder_time, algo.name(), algo.data_source(), res_df, **algo.details())
