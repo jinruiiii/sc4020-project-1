@@ -5,10 +5,10 @@ import sys
 from typing import List, Callable
 import numpy as np
 
-from utils.load_query import load_query
 
 sys.path.append("../..")
 from utils.evaultation.generator import Generator
+from utils.load_query import load_query
 from algo.algo_interface import IAlgo
 from algo.LSHAlgo import LSH
 from algo.HNSWAlgo import HNSW
