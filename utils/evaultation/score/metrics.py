@@ -123,3 +123,26 @@ def get_mean_ndcg_k(
             ndcg += dcg/idcg
         mean_ndcgs.append(ndcg/num_questions)
     return mean_ndcgs
+
+def get_mean_latency(
+        file_paths: List[str]
+) -> List[float]:
+    """
+    Function to get the mean latencies
+    :param file_paths:  List[str], of data paths to add to comparisons
+    :return: List[float] corresponding to the latency of the files in `file_paths`
+    """
+
+    mean_latency = []
+
+    data_dfs = [load_parquet(p) for p in file_paths]
+
+    for df in data_dfs:
+        mean_latency.append(df['time_taken'].mean())
+
+    return mean_latency
+
+
+
+
+

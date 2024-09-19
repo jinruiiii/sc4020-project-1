@@ -1,6 +1,4 @@
 import os
-from utils.load_data import load_parquet
-
 
 def get_data_path(name: str) -> str:
     """
