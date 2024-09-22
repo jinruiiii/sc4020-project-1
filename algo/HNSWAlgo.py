@@ -2,6 +2,7 @@ import os
 import pickle
 import sys
 import faiss
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Union, Literal, Dict, Optional
@@ -18,7 +19,7 @@ from utils.embedder import Embedder
 class HNSW(IAlgo):
     def __init__(
             self,
-            dataset: Literal["starbucks"],
+            dataset: Literal["starbucks", "airline_reviews"],
             embedding_type: str,
             M: int,
             efConstruction: Optional[int] = None,
@@ -70,7 +71,7 @@ class HNSW(IAlgo):
 
         Returns the created HNSW Index
         """
-
+        start = time.time_ns()
         index = faiss.IndexHNSWFlat(self.d, self.M)
 
         if efConstruction is not None:
@@ -81,7 +82,10 @@ class HNSW(IAlgo):
         # change efSearch after adding the data
         if efSearch is not None:
             index.hnsw.efSearch = efSearch
-
+        
+        end = time.time_ns()
+        print(index.hnsw.entry_point)
+        print(f"time taken for index construction for HNSW, efConstruction: {efConstruction}, efSearch: {efSearch}: {(end-start)/1_000_000} ns")
         return index
 
     def search(self, query: str, k: int):

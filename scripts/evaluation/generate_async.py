@@ -7,15 +7,17 @@ import numpy as np
 
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from utils.evaultation.generator import Generator
+from utils.evaultation.generator_async import AGenerator
 from utils.load_query import load_query
 from algo.algo_interface import IAlgo
 from algo.LSHAlgo import LSH
 from algo.HNSWAlgo import HNSW
 from algo.VSMAlgo import VSM
 
+import asyncio
 
-def main():
+
+async def main():
     # Lazily instantiated list of runners
     runners: List[Callable[[], IAlgo]] = []
 
@@ -28,6 +30,10 @@ def main():
     m_vals = [2**i for i in range(4, 10)]
     con_vals = [2**i for i in range(10)]
     search_vals = [2**i for i in range(10)]
+
+    # m_vals = [i for i in range(16,16*11+1,16)]
+    # con_vals = [i for i in range(30,10*10+30+1,10)]
+    # search_vals = [i for i in range(10,5*10+10+1,5)]
 
     for m in m_vals:
         for c in con_vals:
@@ -47,8 +53,8 @@ def main():
     questions = load_query("airline_reviews")
     
     # Execute each runner
-    Generator(questions, top_k=10+1).run(runners)
+    await AGenerator(questions, top_k=10+1).run(runners)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
