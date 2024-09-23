@@ -78,7 +78,7 @@ class AGenerator:
             res_df['top_k'] = res_df["top_k"].apply(lambda x: json.dumps(x.to_dict()))
             print(res_df)
             end = time.time_ns()
-            run_time = end-start // 1_000_000
+            run_time = (end-start) // 1_000_000
             print(f"time taken for a run for {algo.name()}, {algo.details()}: {run_time} ms")
 
             dump_eval_result(self.folder_time, algo.name(), algo.data_source(), res_df, **algo.details())
