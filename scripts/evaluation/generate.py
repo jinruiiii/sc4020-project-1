@@ -33,7 +33,7 @@ def main():
         for c in con_vals:
             for s in search_vals:
                 runners.append(
-                    lambda m_=m, c_=c, s_=s: HNSW("airline_reviews", "bge", m_, c_, s_)
+                    lambda m_=m, c_=c, s_=s: HNSW("starbucks", "bge", m_, c_, s_)
                 )
 
     # for n_pwr in range(1, 10):
@@ -44,7 +44,7 @@ def main():
     print(f"Starting generator with {len(runners)} runners!")
 
     # Load questions
-    questions = load_query("airline_reviews")
+    questions = load_query("starbucks")
     
     # Execute each runner
     Generator(questions, top_k=10+1).run(runners)

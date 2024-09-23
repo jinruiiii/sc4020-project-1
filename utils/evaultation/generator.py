@@ -45,13 +45,13 @@ class Generator:
 
                 for q in self.questions:
                     print(f"Query: {q}")
-                    start_time = time.time_ns()
-                    result = algo.run(q, self.k)
-                    end_time = time.time_ns()
+                    # start_time = time.time_ns()
+                    result, duration = algo.run(q, self.k)
+                    # end_time = time.time_ns()
 
                     res["question"].append(q)
                     res["top_k"].append(result)
-                    res["time_taken"].append((end_time - start_time) // 1_000_000)  # convert ns to ms
+                    res["time_taken"].append(duration // 1_000_000)  # convert ns to ms
 
                     bar()
 

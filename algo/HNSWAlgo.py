@@ -102,11 +102,14 @@ class HNSW(IAlgo):
         except:
             raise ValueError("Currently only accept BGE embedding")
 
+        start_time = time.time_ns()
         D, I = self.index.search(embedded_queries, k)
+        end_time = time.time_ns()
+        duration = end_time - start_time
 
         # results = [[self.data.iloc[row] for row in result] for result in I]
         results = self.data.iloc[I.flatten()]
-        return results
+        return results, duration
 
     def run(self, query, k):
         return self.method(query, k)
