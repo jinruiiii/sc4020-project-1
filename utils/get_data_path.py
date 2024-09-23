@@ -22,7 +22,7 @@ def get_data_path(name: str) -> str:
     return os.path.join(path, file_name)
 
 
-def get_hnsw_path(dataset: str, time_folder: str, neighbors: int, construction: int, search: int) -> str:
+def get_hnsw_path(dataset: str, time_folder: str, neighbors: int, construction: int, search: int, algo_type: str = "AlgoType.HNSW") -> str:
     """
     Function to get the path for HNSW parquet files
     :param time_folder: e.g. "2024-09-16_06-03-58"
@@ -31,7 +31,7 @@ def get_hnsw_path(dataset: str, time_folder: str, neighbors: int, construction: 
     :param search: corresponding to efSearch
     :return: absolute file path to the datafile
     """
-    file = f"{dataset}_AlgoType.HNSW__embedding=bge_mode=hnsw_neighbors={neighbors}_efConstruction={construction}_efSearch={search}.parquet"
+    file = f"{dataset}_{algo_type}__embedding=bge_mode=hnsw_neighbors={neighbors}_efConstruction={construction}_efSearch={search}.parquet"
     path = get_data_path(f"eval/{time_folder}/{file}")
     assert os.path.exists(path), f"File does not exist! {path}"
     return path

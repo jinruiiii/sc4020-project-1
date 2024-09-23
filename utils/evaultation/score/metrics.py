@@ -18,7 +18,8 @@ def get_mean_precision_k(
         ground_truth_path: str,
         file_paths: List[str],
         k: int,
-        num_relevant_docs: int
+        num_relevant_docs: int,
+        review_header: str = "Review"
 ) -> List[float]:
     """
     Function to get mean precision
@@ -40,7 +41,8 @@ def get_mean_precision_k(
         for i in range(num_questions):
             question = ground_truth["question"][i]
             set1 = set(ground_truth["top_k"][i][1:num_relevant_docs+1])
-            set2 = set(remove_query_from_predictions(list(json.loads(df["top_k"][i])["Review"].values()), question)[0:k])
+            ## change review header name
+            set2 = set(remove_query_from_predictions(list(json.loads(df["top_k"][i])[review_header].values()), question)[0:k])
             true_positive = len(set1.intersection(set2))
             precision_score += true_positive/k
         mean_precision_scores.append(precision_score/num_questions)
@@ -50,7 +52,8 @@ def get_mean_precision_k(
 def get_mean_reciprocal_rank(
         ground_truth_path: str,
         file_paths: List[str],
-        k: int
+        k: int,
+        review_header: str = "Review"
 ) -> List[float]:
     """
     Function to get MAP
@@ -78,7 +81,7 @@ def get_mean_reciprocal_rank(
         for i in range(num_questions):
             question = ground_truth["question"][i]
             most_relevant_document = ground_truth["top_k"][i][1]
-            predictions = remove_query_from_predictions(list(json.loads(df["top_k"][i])["Review"].values()), question)[0:k]
+            predictions = remove_query_from_predictions(list(json.loads(df["top_k"][i])[review_header].values()), question)[0:k]
             reciprocal_rank += get_reciprocal_rank(most_relevant_document, predictions)
         mean_reciprocal_ranks.append(reciprocal_rank/num_questions)
     return mean_reciprocal_ranks
@@ -87,7 +90,8 @@ def get_mean_reciprocal_rank(
 def get_mean_ndcg_k(
         ground_truth_path: str,
         file_paths: List[str],
-        k: int
+        k: int,
+        review_header: str = "Review"
 ):
     """
     Function to get nDCG
@@ -112,7 +116,7 @@ def get_mean_ndcg_k(
         ndcg = 0
         for i in range(num_questions):
             question = ground_truth["question"][i]
-            relevance_score = compute_relevance_scores(ground_truth["top_k"][i][1:k+1], remove_query_from_predictions(list(json.loads(df["top_k"][i])["Review"].values()), question)[0:k])
+            relevance_score = compute_relevance_scores(ground_truth["top_k"][i][1:k+1], remove_query_from_predictions(list(json.loads(df["top_k"][i])[review_header].values()), question)[0:k])
             true_relevance = list(range(k,0,-1))
             idcg = 0
             dcg = 0
