@@ -10,12 +10,10 @@ def get_data_path(name: str) -> str:
     #add folders found in name and check if it exists if not create
     file_name = name.split("/")[-1]
     dirs = name.split("/")[:-1]
-    print(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
     path = os.path.join(root, "data")
     for dir in dirs:
         path = os.path.join(path, dir)
-    print(path)
     if not os.path.exists(path):
         os.makedirs(path)
 
