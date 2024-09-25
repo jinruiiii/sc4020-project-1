@@ -34,14 +34,14 @@ def main(args: argparse.Namespace):
         print("adding HNSW runners")
         m_vals = [2**i for i in range(4, 10)]
         con_vals = [i for i in range(50, 501, 50)]
-        # search_vals = [2**i for i in range(10)]
-        s=512
+        search_vals = [2**i for i in range(10)]
 
         for m in m_vals:
             for c in con_vals:
-                runners.append(
-                    lambda m_=m, c_=c, s_=s: HNSW(dataset, embedding_type, m_, c_, s_)
-                )
+                for s in search_vals:
+                    runners.append(
+                        lambda m_=m, c_=c, s_=s: HNSW(dataset, embedding_type, m_, c_, s_)
+                    )
 
     if args.lsh == True:
         print("adding LSH runners")
