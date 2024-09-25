@@ -74,5 +74,5 @@ class Generate_GT:
 
 
 if __name__ == "__main__":
-    generate = Generate_GT("airline_reviews","bge",1000)
-    dump_eval_result("gt", AlgoType.VSM, "airline_reviews", generate.results_df, type="gt1000")
+    generate = Generate_GT("airline_reviews","bge",32)
+    dump_eval_result("gt", AlgoType.VSM, "airline_reviews", generate.results_df, type="gt")

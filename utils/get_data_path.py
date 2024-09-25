@@ -35,14 +35,14 @@ def get_hnsw_path(dataset: str, time_folder: str, neighbors: int, construction: 
     return path
 
 
-def get_lsh_path(dataset: str, time_folder: str, nbits: int) -> str:
+def get_lsh_path(dataset: str, time_folder: str, nbits: int, algo_type: str = "AlgoType.HNSW") -> str:
     """
     Function
     :param time_folder: e.g. "2024-09-16_06-03-58"
     :param nbits: number of bits used in LSH runner
     :return: absolute file path to the datafile
     """
-    file = f"{dataset}_AlgoType.LSH__embedding=bge_mode=hnsw_similarity_nbits={nbits}.parquet"
+    file = f"{dataset}_{algo_type}__embedding=bge_mode=lsh_similarity_nbits={nbits}.parquet"
     path = get_data_path(f"eval/{time_folder}/{file}")
     assert os.path.exists(path), f"File does not exist! {path}"
     return path

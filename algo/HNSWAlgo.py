@@ -110,7 +110,7 @@ class HNSW(IAlgo):
         # results = [[self.data.iloc[row] for row in result] for result in I]
         print(I.shape)
         results = self.data.iloc[I.flatten()]
-        return results, duration
+        return results, duration // 1_000_000
 
     def run(self, query, k):
         return self.method(query, k)

@@ -49,12 +49,12 @@ class Generator:
                 for i, q in enumerate(self.questions):
                     print(f"Query: {q}")
                     # start_time = time.time_ns()
-                    result, duration = algo.run(self.embedded_questions[i], self.k)
+                    result, duration = algo.run(np.array([self.embedded_questions[i]]), self.k)
                     # end_time = time.time_ns()
 
                     res["question"].append(q)
                     res["top_k"].append(result)
-                    res["time_taken"].append(duration // 1_000_000)  # convert ns to ms
+                    res["time_taken"].append(duration)  # convert ns to ms
 
                     bar()
 
