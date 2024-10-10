@@ -9,7 +9,7 @@ from utils.get_data_path import get_data_path
 def dump_eval_result(
         folder_name: str,
         algo_name: AlgoType,
-        dataset_name: Literal["starbucks"],
+        dataset_name: Literal["starbucks", "airline_reviews"],
         data: pd.DataFrame,
         **kwargs
 ) -> None:

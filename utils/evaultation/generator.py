@@ -32,6 +32,7 @@ class Generator:
 
         with alive_progress.alive_bar(total_queries) as bar:
             for r in runners:
+                start = time.time_ns()
                 print("Creating next runner!")
                 algo = r()
                 print(f"Starting runner for {algo.name()}, {algo.details()}")
@@ -44,17 +45,19 @@ class Generator:
 
                 for q in self.questions:
                     print(f"Query: {q}")
-                    start_time = time.time_ns()
-                    result = algo.run(q, self.k)
-                    end_time = time.time_ns()
+                    # start_time = time.time_ns()
+                    result, duration = algo.run(q, self.k)
+                    # end_time = time.time_ns()
 
                     res["question"].append(q)
                     res["top_k"].append(result)
-                    res["time_taken"].append((end_time - start_time) // 1_000_000)  # convert ns to ms
+                    res["time_taken"].append(duration // 1_000_000)  # convert ns to ms
 
                     bar()
 
                 res_df = pd.DataFrame.from_dict(res)
                 res_df['top_k'] = res_df["top_k"].apply(lambda x: json.dumps(x.to_dict()))
-
+                end = time.time_ns()
+                duration = end-start
+                print(f"time taken for runner for {algo.name()}, {algo.details()}: {duration // 1_000_000} ms")
                 dump_eval_result(self.folder_time, algo.name(), algo.data_source(), res_df, **algo.details())

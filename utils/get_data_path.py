@@ -1,6 +1,4 @@
 import os
-from utils.load_data import load_parquet
-
 
 def get_data_path(name: str) -> str:
     """
@@ -10,15 +8,21 @@ def get_data_path(name: str) -> str:
 
     name = name.lstrip("/")
     #add folders found in name and check if it exists if not create
+    file_name = name.split("/")[-1]
     dirs = name.split("/")[:-1]
-    path = f"{os.path.dirname(__file__)}/../data/" + "/".join(dirs)
+    print(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
+    path = os.path.join(root, "data")
+    for dir in dirs:
+        path = os.path.join(path, dir)
+    print(path)
     if not os.path.exists(path):
         os.makedirs(path)
 
-    return f"{os.path.dirname(__file__)}/../data/{name}"
+    return os.path.join(path, file_name)
 
 
-def get_hnsw_path(time_folder: str, neighbors: int, construction: int, search: int) -> str:
+def get_hnsw_path(dataset: str, time_folder: str, neighbors: int, construction: int, search: int, algo_type: str = "AlgoType.HNSW") -> str:
     """
     Function to get the path for HNSW parquet files
     :param time_folder: e.g. "2024-09-16_06-03-58"
@@ -27,20 +31,20 @@ def get_hnsw_path(time_folder: str, neighbors: int, construction: int, search: i
     :param search: corresponding to efSearch
     :return: absolute file path to the datafile
     """
-    file = f"starbucks_AlgoType.HNSW__embedding=bge_mode=hnsw_neighbors={neighbors}_efConstruction={construction}_efSearch={search}.parquet"
+    file = f"{dataset}_{algo_type}__embedding=bge_mode=hnsw_neighbors={neighbors}_efConstruction={construction}_efSearch={search}.parquet"
     path = get_data_path(f"eval/{time_folder}/{file}")
     assert os.path.exists(path), f"File does not exist! {path}"
     return path
 
 
-def get_lsh_path(time_folder: str, nbits: int) -> str:
+def get_lsh_path(dataset: str, time_folder: str, nbits: int) -> str:
     """
     Function
     :param time_folder: e.g. "2024-09-16_06-03-58"
     :param nbits: number of bits used in LSH runner
     :return: absolute file path to the datafile
     """
-    file = f"starbucks_AlgoType.LSH__embedding=bge_mode=hnsw_similarity_nbits={nbits}.parquet"
+    file = f"{dataset}_AlgoType.LSH__embedding=bge_mode=hnsw_similarity_nbits={nbits}.parquet"
     path = get_data_path(f"eval/{time_folder}/{file}")
     assert os.path.exists(path), f"File does not exist! {path}"
     return path

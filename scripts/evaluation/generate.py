@@ -5,8 +5,8 @@ import sys
 from typing import List, Callable
 import numpy as np
 
-
-sys.path.append("../..")
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from utils.evaultation.generator import Generator
 from utils.load_query import load_query
 from algo.algo_interface import IAlgo
@@ -21,9 +21,9 @@ def main():
 
     print("Adding runners to list")
 
-    runners.append(
-        lambda: VSM("starbucks", "bge")
-    )
+    # runners.append(
+    #     lambda: VSM("airline_reviews", "bge")
+    # )
 
     m_vals = [2**i for i in range(4, 10)]
     con_vals = [2**i for i in range(10)]
@@ -36,16 +36,16 @@ def main():
                     lambda m_=m, c_=c, s_=s: HNSW("starbucks", "bge", m_, c_, s_)
                 )
 
-    for n_pwr in range(1, 10):
-        runners.append(lambda pwr=n_pwr: LSH("starbucks", "bge", 2**pwr))
+    # for n_pwr in range(1, 10):
+    #     runners.append(lambda pwr=n_pwr: LSH("airline_reviews", "bge", 2**pwr))
 
-    runners.append(lambda pwr=n_pwr: LSH("starbucks", "bge", 768))
+    # runners.append(lambda pwr=n_pwr: LSH("airline_reviews", "bge", 768))
 
     print(f"Starting generator with {len(runners)} runners!")
 
     # Load questions
     questions = load_query("starbucks")
-
+    
     # Execute each runner
     Generator(questions, top_k=10+1).run(runners)
 
