@@ -146,7 +146,38 @@ def get_mean_latency(
 
     return mean_latency
 
+def get_median_latency(
+        file_paths: List[str]
+) -> List[float]:
+    """
+    Function to get the mean latencies
+    :param file_paths:  List[str], of data paths to add to comparisons
+    :return: List[float] corresponding to the latency of the files in `file_paths`
+    """
 
+    median_latency = []
 
+    data_dfs = [load_parquet(p) for p in file_paths]
 
+    for df in data_dfs:
+        median_latency.append(df['time_taken'].median())
 
+    return median_latency
+
+def get_batch_latency(
+        file_paths: List[str]
+) -> List[float]:
+    """
+    Function to get the mean latencies
+    :param file_paths:  List[str], of data paths to add to comparisons
+    :return: List[float] corresponding to the latency of the files in `file_paths`
+    """
+
+    latency = []
+
+    data_dfs = [load_parquet(p) for p in file_paths]
+
+    for df in data_dfs:
+        latency.append(df['time_taken'][0])
+
+    return latency

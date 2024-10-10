@@ -14,7 +14,7 @@ from utils.embedder import Embedder
 
 
 class VSM(IAlgo):
-    def __init__(self, dataset:Literal["starbucks"], embedding):
+    def __init__(self, dataset:Literal["starbucks", "airline_reviews"], embedding):
         self.embedding_type = embedding
         try:
             if self.embedding_type == "bge":
@@ -28,18 +28,19 @@ class VSM(IAlgo):
         embedding_file_path = os.path.join(base_dir, f"../data/{dataset}/embeddings/{embedding}.parquet")
         self.data = load_csv(raw_file_path)
         self.embeddings = np.vstack(load_parquet(embedding_file_path).values)
+        print(len(self.embeddings))
 
         self.mode = "cosine_similarity"
         if self.mode=="cosine_similarity":
             self.method = self.top_k_cosine_similarity
 
 
-    def top_k_cosine_similarity(self, query, k):
-        try:
-            if self.embedding_type == "bge":
-                query_embedded = self.vectorizer.embed(query)
-        except:
-            raise ValueError("Currently only accept BGE embedding")
+    def top_k_cosine_similarity(self, query_embedded, k):
+        # try:
+        #     if self.embedding_type == "bge":
+        #         query_embedded = self.vectorizer.embed(query)
+        # except:
+        #     raise ValueError("Currently only accept BGE embedding")
         similarities = cosine_similarity(query_embedded, self.embeddings)
 
         # get top k most similar documents
@@ -52,7 +53,7 @@ class VSM(IAlgo):
 
         top_k_documents = self.data.iloc[top_k_indices]
 
-        return top_k_documents
+        return top_k_documents, top_k_indices
         
 
     def run(self, query, k):

@@ -10,12 +10,10 @@ def get_data_path(name: str) -> str:
     #add folders found in name and check if it exists if not create
     file_name = name.split("/")[-1]
     dirs = name.split("/")[:-1]
-    print(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))
     path = os.path.join(root, "data")
     for dir in dirs:
         path = os.path.join(path, dir)
-    print(path)
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -37,14 +35,14 @@ def get_hnsw_path(dataset: str, time_folder: str, neighbors: int, construction: 
     return path
 
 
-def get_lsh_path(dataset: str, time_folder: str, nbits: int) -> str:
+def get_lsh_path(dataset: str, time_folder: str, nbits: int, algo_type: str = "AlgoType.HNSW") -> str:
     """
     Function
     :param time_folder: e.g. "2024-09-16_06-03-58"
     :param nbits: number of bits used in LSH runner
     :return: absolute file path to the datafile
     """
-    file = f"{dataset}_AlgoType.LSH__embedding=bge_mode=hnsw_similarity_nbits={nbits}.parquet"
+    file = f"{dataset}_{algo_type}__embedding=bge_mode=lsh_similarity_nbits={nbits}.parquet"
     path = get_data_path(f"eval/{time_folder}/{file}")
     assert os.path.exists(path), f"File does not exist! {path}"
     return path
