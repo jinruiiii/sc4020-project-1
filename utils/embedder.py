@@ -23,3 +23,14 @@ class Embedder:
             outputs = self.model(**inputs)
 
         return torch.nn.functional.normalize(outputs.last_hidden_state[:, 0, :], p=2, dim=1).cpu()
+    
+    def batch_embed(self, texts):
+        inputs = self.tokenizer(texts, return_tensors="pt", padding=True, truncation=True).to(
+            self.determine_best_device())
+
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+
+        sentence_embeddings = torch.nn.functional.normalize(outputs.last_hidden_state[:, 0, :], p=2, dim=1).cpu()
+        print(sentence_embeddings)
+        return sentence_embeddings

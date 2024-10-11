@@ -1,9 +1,10 @@
 import os
 import pickle
 import sys
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from typing import Union, Literal, Dict
+from typing import Union, Literal, Dict, List, Any
 
 sys.path.append("..")
 import pandas as dd
@@ -38,15 +39,21 @@ class LSH(IAlgo):
         if self.mode == "lsh_similarity":
             self.method = self.top_k_lsh_similarity
 
-    def top_k_lsh_similarity(self, query, k):
-        try:
-            if self.embedding_type == "bge":
-                query_embedded = self.vectorizer.embed(query)
-        except:
-            raise ValueError("Currently only accept BGE embedding")
-        distances, indices = self.lsh_index.search(query_embedded, k)
+    def top_k_lsh_similarity(self, embedded_queries:List[Any], k):
+        # try:
+        #     if self.embedding_type == "bge":
+        #         query_embedded = self.vectorizer.embed(query)
+        # except:
+        #     raise ValueError("Currently only accept BGE embedding")
+        start_time = time.time_ns()
+        print(embedded_queries.shape)
+        distances, indices = self.lsh_index.search(embedded_queries, k)
+        end_time = time.time_ns() 
         top_k_documents = self.data.iloc[indices.flatten()]
-        return top_k_documents
+        print(top_k_documents)
+
+        duration = end_time - start_time
+        return top_k_documents, duration
 
     def run(self, query, k):
         return self.method(query, k)

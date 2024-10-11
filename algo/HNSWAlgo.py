@@ -2,9 +2,10 @@ import os
 import pickle
 import sys
 import faiss
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from typing import Union, Literal, Dict, Optional
+from typing import Union, Literal, Dict, Optional, List, Any
 
 sys.path.append("..")
 import pandas as pd
@@ -18,7 +19,7 @@ from utils.embedder import Embedder
 class HNSW(IAlgo):
     def __init__(
             self,
-            dataset: Literal["starbucks"],
+            dataset: Literal["starbucks", "airline_reviews"],
             embedding_type: str,
             M: int,
             efConstruction: Optional[int] = None,
@@ -70,7 +71,7 @@ class HNSW(IAlgo):
 
         Returns the created HNSW Index
         """
-
+        start = time.time_ns()
         index = faiss.IndexHNSWFlat(self.d, self.M)
 
         if efConstruction is not None:
@@ -81,28 +82,35 @@ class HNSW(IAlgo):
         # change efSearch after adding the data
         if efSearch is not None:
             index.hnsw.efSearch = efSearch
-
+        
+        end = time.time_ns()
+        print(index.hnsw.entry_point)
+        print(f"time taken for index construction for HNSW, efConstruction: {efConstruction}, efSearch: {efSearch}: {(end-start)/1_000_000} ns")
         return index
 
-    def search(self, query: str, k: int):
+    def search(self, embedded_queries:List[Any], k: int):
         """
-        query: single query to search for
+        embedded_query: single query to search for (embedded)
         k: no. of nearest neighbours to search 
 
         Returns (list of indices corresponding to nearest neighbours of query, list of data rows corresponding to nearest neighbours of query)
         """
-        embedded_queries = []
-        try:
-            if self.embedding_type == "bge":
-                embedded_queries = self.vectorizer.embed(query)
-        except:
-            raise ValueError("Currently only accept BGE embedding")
+        # embedded_queries = []
+        # try:
+        #     if self.embedding_type == "bge":
+        #         embedded_queries = self.vectorizer.embed(query)
+        # except:
+        #     raise ValueError("Currently only accept BGE embedding")
 
+        start_time = time.time_ns()
         D, I = self.index.search(embedded_queries, k)
+        end_time = time.time_ns()
+        duration = end_time - start_time
 
         # results = [[self.data.iloc[row] for row in result] for result in I]
+        print(I.shape)
         results = self.data.iloc[I.flatten()]
-        return results
+        return results, duration // 1_000_000
 
     def run(self, query, k):
         return self.method(query, k)
